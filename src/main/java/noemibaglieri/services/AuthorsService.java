@@ -1,5 +1,7 @@
 package noemibaglieri.services;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import lombok.extern.slf4j.Slf4j;
 import noemibaglieri.entities.Author;
 import noemibaglieri.exceptions.BadRequestException;
@@ -8,7 +10,9 @@ import noemibaglieri.payloads.NewAuthorPayload;
 import noemibaglieri.repositories.AuthorsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @Slf4j
@@ -17,6 +21,9 @@ public class AuthorsService {
 
     @Autowired
     private AuthorsRepository authorsRepository;
+
+    @Autowired
+    private Cloudinary imgUploader;
 
     public Author save(NewAuthorPayload payload) {
 
@@ -62,5 +69,14 @@ public class AuthorsService {
    public void findByIdAndDelete(long authorId) {
         Author found = this.findById(authorId);
         this.authorsRepository.delete(found);
+    }
+
+    public String uploadAvatar(MultipartFile file) {
+        try {
+            String imgUrl = (String) imgUploader.uploader().upload(file.getBytes(), ObjectUtils.emptyMap()).get("url");
+            return imgUrl;
+        } catch (IOException e) {
+            throw new BadRequestException("There was a problem uploading this file.");
+        }
     }
 }

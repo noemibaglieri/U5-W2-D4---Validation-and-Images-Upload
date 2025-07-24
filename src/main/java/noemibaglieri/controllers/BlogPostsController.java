@@ -6,6 +6,7 @@ import noemibaglieri.services.BlogPostsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -40,5 +41,10 @@ public class BlogPostsController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void getPostByIdAndDelete(@PathVariable long postId) {
         this.blogPostsService.findByIdAndDelete(postId);
+    }
+
+    @PatchMapping("/{postId}/cover")
+    public String uploadImage(@RequestParam("cover") MultipartFile file) {
+        return this.blogPostsService.uploadCover(file);
     }
 }

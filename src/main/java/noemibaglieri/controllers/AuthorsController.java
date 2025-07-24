@@ -6,6 +6,7 @@ import noemibaglieri.services.AuthorsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -41,5 +42,10 @@ public class AuthorsController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void getAuthorByIdAndDelete(@PathVariable long authorId) {
         this.authorsService.findByIdAndDelete(authorId);
+    }
+
+    @PatchMapping("/{userId}/avatar")
+    public String uploadImage(@RequestParam("avatar") MultipartFile file) {
+        return this.authorsService.uploadAvatar(file);
     }
 }

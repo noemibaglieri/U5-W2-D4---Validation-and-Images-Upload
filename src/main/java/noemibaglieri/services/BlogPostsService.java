@@ -1,15 +1,20 @@
 package noemibaglieri.services;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import lombok.extern.slf4j.Slf4j;
 import noemibaglieri.entities.Author;
 import noemibaglieri.entities.BlogPost;
+import noemibaglieri.exceptions.BadRequestException;
 import noemibaglieri.exceptions.NotFoundException;
 import noemibaglieri.payloads.NewBlogPostPayload;
 import noemibaglieri.repositories.AuthorsRepository;
 import noemibaglieri.repositories.BlogPostsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,6 +27,9 @@ public class BlogPostsService {
 
     @Autowired
     private AuthorsRepository authorsRepository;
+
+    @Autowired
+    private Cloudinary imgUploader;
 
     public BlogPost save(NewBlogPostPayload payload) {
         Author author;
@@ -65,5 +73,15 @@ public class BlogPostsService {
     public void findByIdAndDelete(long blogId) {
         BlogPost found = this.findById(blogId);
         this.blogPostsRepository.delete(found);
+    }
+
+    public String uploadCover(MultipartFile file) {
+        try {
+            String imgUrl = (String) imgUploader.uploader().upload(file.getBytes(), ObjectUtils.emptyMap()).get("url");
+            return imgUrl;
+        } catch (IOException e) {
+            throw new BadRequestException("There was a problem uploading this file.");
+        }
+
     }
 }
