@@ -1,7 +1,7 @@
 package noemibaglieri.controllers;
 
 import noemibaglieri.entities.BlogPost;
-import noemibaglieri.payloads.NewBlogPostPayload;
+import noemibaglieri.payloads.NewBlogPostDTO;
 import noemibaglieri.services.BlogPostsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,12 +28,12 @@ public class BlogPostsController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public BlogPost createPost(@RequestBody NewBlogPostPayload body) {
+    public BlogPost createPost(@RequestBody NewBlogPostDTO body) {
         return this.blogPostsService.save(body);
     }
 
     @PutMapping("/{postId}")
-    public BlogPost getAuthorByIdAndUpdate(@RequestBody NewBlogPostPayload body, @PathVariable long blogId) {
+    public BlogPost getAuthorByIdAndUpdate(@RequestBody NewBlogPostDTO body, @PathVariable long blogId) {
         return this.blogPostsService.findByIdAndUpdate(blogId, body);
     }
 

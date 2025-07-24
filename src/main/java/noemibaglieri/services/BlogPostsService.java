@@ -7,7 +7,7 @@ import noemibaglieri.entities.Author;
 import noemibaglieri.entities.BlogPost;
 import noemibaglieri.exceptions.BadRequestException;
 import noemibaglieri.exceptions.NotFoundException;
-import noemibaglieri.payloads.NewBlogPostPayload;
+import noemibaglieri.payloads.NewBlogPostDTO;
 import noemibaglieri.repositories.AuthorsRepository;
 import noemibaglieri.repositories.BlogPostsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,11 +31,11 @@ public class BlogPostsService {
     @Autowired
     private Cloudinary imgUploader;
 
-    public BlogPost save(NewBlogPostPayload payload) {
+    public BlogPost save(NewBlogPostDTO payload) {
         Author author;
-        Optional<Author> authorResponse = this.authorsRepository.findById(payload.getAuthor());
+        Optional<Author> authorResponse = this.authorsRepository.findById(payload.author());
         author = authorResponse.orElseGet(Author::new);
-        BlogPost newBlogPost = new BlogPost(payload.getCategory(), payload.getTitle(), payload.getContent(), payload.getReadingTime(), "https://picsum.photos/200/300", author);
+        BlogPost newBlogPost = new BlogPost(payload.category(), payload.title(), payload.content(), payload.readingTime(), "https://picsum.photos/200/300", author);
 
         this.blogPostsRepository.save(newBlogPost);
         log.info("Your blog post * " + newBlogPost.getTitle() + " * was successfully published");
@@ -50,16 +50,16 @@ public class BlogPostsService {
         return this.blogPostsRepository.findById(blogId).orElseThrow(() -> new NotFoundException(blogId));
     }
 
-    public BlogPost findByIdAndUpdate(long blogId, NewBlogPostPayload payload) {
+    public BlogPost findByIdAndUpdate(long blogId, NewBlogPostDTO payload) {
         BlogPost found = this.findById(blogId);
 
-        found.setCategory(payload.getCategory());
-        found.setTitle(payload.getTitle());
-        found.setContent(payload.getContent());
-        found.setReadingTime(payload.getReadingTime());
+        found.setCategory(payload.category());
+        found.setTitle(payload.title());
+        found.setContent(payload.content());
+        found.setReadingTime(payload.readingTime());
         found.setCover("https://picsum.photos/200/300");
         Author author;
-        Optional<Author> authorResponse = this.authorsRepository.findById(payload.getAuthor());
+        Optional<Author> authorResponse = this.authorsRepository.findById(payload.author());
         author = authorResponse.orElseGet(Author::new);
         found.setAuthor(author);
 
@@ -77,8 +77,7 @@ public class BlogPostsService {
 
     public String uploadCover(MultipartFile file) {
         try {
-            String imgUrl = (String) imgUploader.uploader().upload(file.getBytes(), ObjectUtils.emptyMap()).get("url");
-            return imgUrl;
+            return (String) imgUploader.uploader().upload(file.getBytes(), ObjectUtils.emptyMap()).get("url");
         } catch (IOException e) {
             throw new BadRequestException("There was a problem uploading this file.");
         }

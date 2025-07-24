@@ -1,7 +1,7 @@
 package noemibaglieri.controllers;
 
 import noemibaglieri.entities.Author;
-import noemibaglieri.payloads.NewAuthorPayload;
+import noemibaglieri.payloads.NewAuthorDTO;
 import noemibaglieri.services.AuthorsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,13 +28,13 @@ public class AuthorsController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Author createAuthor(@RequestBody NewAuthorPayload body) {
+    public Author createAuthor(@RequestBody NewAuthorDTO body) {
         System.out.println(body);
         return this.authorsService.save(body);
     }
 
     @PutMapping("/{authorId}")
-    public Author getAuthorByIdAndUpdate(@RequestBody NewAuthorPayload body, @PathVariable long authorId) {
+    public Author getAuthorByIdAndUpdate(@RequestBody NewAuthorDTO body, @PathVariable long authorId) {
         return this.authorsService.findByIdAndUpdate(authorId, body);
     }
 
